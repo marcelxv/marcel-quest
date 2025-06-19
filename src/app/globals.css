@@ -1,26 +1,640 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Default (Terminal) theme values */
+  --theme-background: #000000;
+  --theme-foreground: #00ff00;
+  --theme-secondary: #88cc88;
+  --theme-border: #00aa00;
+  --theme-box-bg: rgba(0, 20, 0, 0.9);
+  --theme-accent: #00ff00;
+  --theme-hover: rgba(0, 255, 0, 0.1);
+  --theme-easter-egg: #ffff00;
+  --theme-font-primary: 'Courier New', 'Monaco', 'Menlo', monospace;
+  --theme-font-mono: 'Courier New', 'Monaco', 'Menlo', monospace;
+  --theme-text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+  --theme-box-shadow: 0 0 10px rgba(0, 255, 0, 0.3), inset 0 0 10px rgba(0, 255, 0, 0.1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-background: var(--theme-background);
+  --color-foreground: var(--theme-foreground);
+  --color-secondary: var(--theme-secondary);
+  --color-border: var(--theme-border);
+  --color-box-bg: var(--theme-box-bg);
+  --color-accent: var(--theme-accent);
+  --color-hover: var(--theme-hover);
+  --color-easter-egg: var(--theme-easter-egg);
+  --font-primary: var(--theme-font-primary);
+  --font-mono: var(--theme-font-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--theme-background);
+  color: var(--theme-foreground);
+  font-family: var(--theme-font-primary);
+  overflow-x: hidden;
+  transition: all 0.3s ease;
 }
+
+/* Terminal theme scan lines effect */
+body.theme-terminal::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    transparent 50%, 
+    rgba(0, 255, 0, 0.03) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* Medieval theme background texture */
+body.theme-medieval {
+  background: var(--theme-background);
+  background-attachment: fixed;
+  position: relative;
+}
+
+body.theme-medieval::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(196, 164, 110, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(196, 164, 110, 0.02) 0%, transparent 40%);
+  background-size: 200px 200px, 300px 300px, 150px 150px;
+  background-position: 0 0, 100px 50px, 200px 100px;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.6;
+}
+
+/* Typing animation */
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.typing-text {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--theme-accent);
+  animation: typing 2s steps(40, end), blink 1s infinite step-end;
+}
+
+/* RPG dialogue box styling */
+.dialogue-box {
+  background: var(--theme-box-bg);
+  border: 2px solid var(--theme-border);
+  box-shadow: var(--theme-box-shadow);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+/* Medieval theme dialogue box */
+.theme-medieval .dialogue-box {
+  border-radius: 12px;
+  border: 2px solid var(--theme-border);
+  position: relative;
+  background: var(--theme-box-bg) !important;
+  color: var(--theme-foreground) !important;
+  backdrop-filter: blur(8px);
+  box-shadow: var(--theme-box-shadow);
+}
+
+.theme-medieval .dialogue-box::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(45deg, 
+    var(--theme-border) 0%, 
+    var(--theme-accent) 25%, 
+    var(--theme-border) 50%, 
+    var(--theme-accent) 75%, 
+    var(--theme-border) 100%);
+  border-radius: 15px;
+  z-index: -1;
+  opacity: 0.7;
+}
+
+/* Medieval theme dialogue text styling for better contrast */
+.theme-medieval .dialogue-box .leading-relaxed,
+.theme-medieval .dialogue-box .prose,
+.theme-medieval .dialogue-box p {
+  color: var(--theme-foreground) !important;
+  text-shadow: var(--theme-text-shadow);
+}
+
+.theme-medieval .dialogue-box .font-bold {
+  color: var(--theme-accent) !important;
+  text-shadow: var(--theme-text-shadow);
+}
+
+.dialogue-option {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 2px solid var(--theme-border);
+  background: transparent;
+  color: var(--theme-secondary);
+}
+
+.dialogue-option:hover {
+  background: var(--theme-hover);
+  border-color: var(--theme-accent);
+  color: var(--theme-foreground);
+  text-shadow: var(--theme-text-shadow);
+}
+
+/* Medieval theme dialogue options */
+.theme-medieval .dialogue-option {
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  background: var(--theme-box-bg) !important;
+  color: var(--theme-foreground) !important;
+  border: 2px solid var(--theme-border) !important;
+  box-shadow: var(--theme-box-shadow);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
+}
+
+.theme-medieval .dialogue-option:hover {
+  background: rgba(45, 27, 61, 0.95) !important;
+  color: var(--theme-accent) !important;
+  border-color: var(--theme-accent) !important;
+  box-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.4),
+    inset 0 0 15px rgba(212, 175, 55, 0.08);
+  transform: translateY(-2px);
+  text-shadow: var(--theme-text-shadow);
+}
+
+/* Terminal theme glitch effect */
+@keyframes glitch {
+  /* 0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); } */
+  
+}
+
+.theme-terminal .glitch {
+  animation: glitch 0.3s ease-in-out infinite;
+}
+
+/* Medieval theme glow effect */
+.theme-medieval .glow {
+  animation: medieval-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes medieval-glow {
+  from { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); }
+  to { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px var(--theme-accent); }
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  background: var(--theme-box-bg);
+  border-color: var(--theme-border);
+  color: var(--theme-foreground);
+  backdrop-filter: blur(5px);
+}
+
+.theme-toggle:hover {
+  background: var(--theme-hover);
+  border-color: var(--theme-accent);
+  box-shadow: var(--theme-box-shadow);
+}
+
+/* Medieval theme specific styles */
+.theme-medieval h1,
+.theme-medieval h2 {
+  font-family: var(--font-uncial-antiqua), var(--font-cinzel), serif;
+  font-weight: 400;
+  color: var(--theme-accent);
+  text-shadow: 
+    3px 3px 0px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(212, 175, 55, 0.5),
+    0 0 40px rgba(212, 175, 55, 0.3);
+  letter-spacing: 2px;
+}
+
+.theme-medieval h1 {
+  position: relative;
+  font-size: clamp(2rem, 5vw, 4rem);
+}
+
+.theme-medieval h1::before {
+  content: '⚔️';
+  position: absolute;
+  left: -60px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: var(--theme-accent);
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
+  animation: medievalGlow 3s ease-in-out infinite alternate;
+}
+
+.theme-medieval h1::after {
+  content: '⚔️';
+  position: absolute;
+  right: -60px;
+  top: 50%;
+  transform: translateY(-50%) scaleX(-1);
+  font-size: 1.5rem;
+  color: var(--theme-accent);
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
+  animation: medievalGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes medievalGlow {
+  from {
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
+  }
+  to {
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.9));
+  }
+}
+
+.theme-medieval .quest-master-avatar {
+  filter: sepia(20%) saturate(180%) hue-rotate(15deg) brightness(1.1);
+  border: 3px solid var(--theme-border) !important;
+  box-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.4),
+    inset 0 0 20px rgba(212, 175, 55, 0.1);
+}
+
+/* Theme toggle button - Medieval style */
+.theme-medieval .theme-toggle {
+  background: var(--theme-box-bg) !important;
+  border: 2px solid var(--theme-border) !important;
+  color: var(--theme-foreground) !important;
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  box-shadow: var(--theme-box-shadow);
+  font-family: var(--font-cinzel), serif;
+  font-weight: 600;
+  text-shadow: var(--theme-text-shadow);
+}
+
+.theme-medieval .theme-toggle:hover {
+  background: rgba(45, 27, 61, 0.95) !important;
+  border-color: var(--theme-accent) !important;
+  color: var(--theme-accent) !important;
+  box-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.4),
+    inset 0 0 15px rgba(212, 175, 55, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Medieval theme input styling */
+.theme-medieval input {
+  background: rgba(35, 25, 50, 0.8) !important;
+  border: 2px solid var(--theme-border) !important;
+  color: var(--theme-foreground) !important;
+  border-radius: 8px !important;
+  box-shadow: 
+    0 0 15px rgba(212, 175, 55, 0.2),
+    inset 0 0 15px rgba(212, 175, 55, 0.05);
+}
+
+.theme-medieval input:focus {
+  outline: none !important;
+  border-color: var(--theme-accent) !important;
+  box-shadow: 
+    0 0 25px rgba(255, 215, 0, 0.4),
+    inset 0 0 20px rgba(255, 215, 0, 0.08);
+}
+
+.theme-medieval input::placeholder {
+  color: var(--theme-secondary) !important;
+  opacity: 0.7;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .theme-toggle {
+    padding: 8px;
+  }
+  
+  .theme-toggle span {
+    font-size: 0.75rem;
+  }
+}
+
+/* Easter egg styling */
+.easter-egg-option {
+  border-color: var(--theme-easter-egg) !important;
+  color: var(--theme-easter-egg) !important;
+}
+
+.easter-egg-option:hover {
+  background: rgba(255, 255, 0, 0.1) !important;
+  box-shadow: 0 0 15px var(--theme-easter-egg) !important;
+}
+
+/* CV Download button styling */
+.cv-download-btn {
+  transition: all 0.3s ease;
+}
+
+.cv-download-btn:hover {
+  background: var(--theme-hover);
+  border-color: var(--theme-accent);
+  box-shadow: var(--theme-box-shadow);
+  transform: translateY(-2px);
+}
+
+/* Medieval theme CV download button */
+.theme-medieval .cv-download-btn {
+  background: var(--theme-box-bg) !important;
+  border: 2px solid var(--theme-border) !important;
+  color: var(--theme-foreground) !important;
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  box-shadow: var(--theme-box-shadow);
+  font-family: var(--font-cinzel), serif;
+  font-weight: 600;
+  text-shadow: var(--theme-text-shadow);
+}
+
+.theme-medieval .cv-download-btn:hover {
+  background: rgba(45, 27, 61, 0.95) !important;
+  border-color: var(--theme-accent) !important;
+  color: var(--theme-accent) !important;
+  box-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.4),
+    inset 0 0 15px rgba(212, 175, 55, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Language Switcher styling */
+.language-switcher-btn {
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.language-switcher-btn:hover {
+  background: var(--theme-hover);
+  border-color: var(--theme-accent);
+  box-shadow: var(--theme-box-shadow);
+  transform: translateY(-1px);
+}
+
+.language-dropdown {
+  min-width: 140px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.language-dropdown button:hover {
+  background: var(--theme-hover) !important;
+}
+
+/* Medieval theme language switcher */
+.theme-medieval .language-switcher-btn {
+  background: var(--theme-box-bg) !important;
+  border: 2px solid var(--theme-border) !important;
+  color: var(--theme-foreground) !important;
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  box-shadow: var(--theme-box-shadow);
+  font-family: var(--font-cinzel), serif;
+  font-weight: 600;
+  text-shadow: var(--theme-text-shadow);
+}
+
+.theme-medieval .language-switcher-btn:hover {
+  background: rgba(45, 27, 61, 0.95) !important;
+  border-color: var(--theme-accent) !important;
+  color: var(--theme-accent) !important;
+  box-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.4),
+    inset 0 0 15px rgba(212, 175, 55, 0.08);
+  transform: translateY(-2px);
+}
+
+.theme-medieval .language-dropdown {
+  background: rgba(35, 25, 50, 0.95);
+  border: 2px solid var(--theme-border);
+  box-shadow: 
+    0 0 25px rgba(0, 0, 0, 0.5),
+    0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .min-h-screen {
+    padding: 8px !important;
+  }
+  
+  .dialogue-box {
+    margin: 8px !important;
+    padding: 16px !important;
+    max-width: 100% !important;
+  }
+  
+  .dialogue-box .flex {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .dialogue-box .quest-master-avatar {
+    align-self: center;
+    width: 48px !important;
+    height: 48px !important;
+  }
+  
+  .dialogue-option {
+    padding: 12px 16px !important;
+    margin: 6px 0 !important;
+    font-size: 14px !important;
+  }
+  
+  /* Header controls responsive */
+  .flex.justify-between.items-start {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .cv-download-btn {
+    font-size: 12px !important;
+    padding: 8px 12px !important;
+  }
+  
+  .theme-toggle {
+    font-size: 12px !important;
+  }
+  
+  /* Footer responsive */
+  footer {
+    padding: 12px !important;
+    font-size: 10px !important;
+    text-align: center !important;
+  }
+  
+  /* Header responsive */
+  header h1 {
+    font-size: 24px !important;
+  }
+  
+  header h2 {
+    font-size: 16px !important;
+  }
+  
+  .easter-egg-input {
+    font-size: 12px !important;
+    padding: 8px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .dialogue-box {
+    margin: 4px !important;
+    padding: 12px !important;
+  }
+  
+  .dialogue-option {
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+  }
+  
+  .cv-download-btn span:last-child {
+    display: none;
+  }
+  
+  .cv-download-btn::after {
+    content: 'CV';
+  }
+  
+  header h1 {
+    font-size: 20px !important;
+  }
+  
+  header h2 {
+    font-size: 14px !important;
+  }
+}
+
+/* Touch device improvements */
+@media (hover: none) and (pointer: coarse) {
+  .dialogue-option {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .cv-download-btn,
+  .theme-toggle {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .easter-egg-input {
+    min-height: 44px;
+  }
+}
+
+/* Language Toggle styling */
+.language-toggle {
+  transition: all 0.3s ease;
+  min-width: 60px;
+}
+
+.language-toggle:hover {
+  background: var(--theme-hover);
+  border-color: var(--theme-accent);
+  box-shadow: var(--theme-box-shadow);
+  transform: translateY(-1px);
+}
+
+/* Medieval theme language toggle */
+.theme-medieval .language-toggle {
+  background: var(--theme-box-bg) !important;
+  border: 2px solid var(--theme-border) !important;
+  color: var(--theme-foreground) !important;
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  box-shadow: var(--theme-box-shadow);
+  font-family: var(--font-cinzel), serif;
+  font-weight: 600;
+  text-shadow: var(--theme-text-shadow);
+}
+
+.theme-medieval .language-toggle:hover {
+  background: rgba(45, 27, 61, 0.95) !important;
+  border-color: var(--theme-accent) !important;
+  color: var(--theme-accent) !important;
+  box-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.4),
+    inset 0 0 15px rgba(212, 175, 55, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Terminal theme language toggle */
+.theme-terminal .language-toggle {
+  background: rgba(0, 20, 0, 0.9);
+  border: 2px solid var(--theme-border);
+  color: var(--theme-foreground);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  box-shadow: 
+    0 0 10px rgba(0, 255, 0, 0.3),
+    inset 0 0 10px rgba(0, 255, 0, 0.1);
+}
+
+.theme-terminal .language-toggle:hover {
+  background: rgba(0, 30, 0, 0.95);
+  border-color: var(--theme-accent);
+  box-shadow: 
+    0 0 15px rgba(0, 255, 0, 0.4),
+    inset 0 0 15px rgba(0, 255, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Medieval theme buttons */
+.theme-medieval .cv-download-btn,
+.theme-medieval .language-toggle,
+.theme-medieval .theme-toggle {
+  background: var(--theme-box-bg) !important;
+  border: 2px solid var(--theme-border) !important;
+  color: var(--theme-foreground) !important;
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  box-shadow: var(--theme-box-shadow);
+  font-family: var(--font-cinzel), serif;
+  font-weight: 600;
+  text-shadow: var(--theme-text-shadow);
+}
+
+.theme-medieval .cv-download-btn:hover,
+.theme-medieval .language-toggle:hover,
+.theme-medieval .theme-toggle:hover {
+  background: rgba(45, 27, 61, 0.95) !important;
+  border-color: var(--theme-accent) !important;
+  color: var(--theme-accent) !important;
+  box-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.4),
+    inset 0 0 15px rgba(212, 175, 55, 0.08);
+  transform: translateY(-2px);
+} 
